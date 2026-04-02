@@ -5,15 +5,15 @@ set -euo pipefail
 
 APP_DIR="/opt/gft-usher-tools"
 APP_USER="gft"
-BUN="/home/$APP_USER/.bun/bin/bun"
+BUN_PATH="/home/$APP_USER/.bun/bin"
 
 cd "$APP_DIR"
 
 echo "=== Installing dependencies ==="
-sudo -u "$APP_USER" "$BUN" install --frozen-lockfile
+sudo -u "$APP_USER" bash -c "export PATH=$BUN_PATH:\$PATH && cd $APP_DIR && bun install --frozen-lockfile"
 
 echo "=== Building frontend ==="
-sudo -u "$APP_USER" "$BUN" run build
+sudo -u "$APP_USER" bash -c "export PATH=$BUN_PATH:\$PATH && cd $APP_DIR && bun run build"
 
 echo "=== Installing systemd units ==="
 cp deploy/gft-usher.service /etc/systemd/system/

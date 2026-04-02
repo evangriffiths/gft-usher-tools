@@ -35,10 +35,10 @@ fi
 chown -R "$APP_USER:$APP_USER" "$APP_DIR"
 
 echo "=== Installing dependencies + building ==="
-sudo -u "$APP_USER" bash -c "cd $APP_DIR && /home/$APP_USER/.bun/bin/bun install && /home/$APP_USER/.bun/bin/bun run build"
+sudo -u "$APP_USER" bash -c "export PATH=/home/$APP_USER/.bun/bin:\$PATH && cd $APP_DIR && bun install && bun run build"
 
 echo "=== Initial data sync ==="
-sudo -u "$APP_USER" bash -c "cd $APP_DIR && /home/$APP_USER/.bun/bin/bun run src/server/sync-cli.ts all"
+sudo -u "$APP_USER" bash -c "export PATH=/home/$APP_USER/.bun/bin:\$PATH && cd $APP_DIR && bun run src/server/sync-cli.ts all"
 
 echo "=== Installing systemd units ==="
 bash "$APP_DIR/deploy/deploy.sh"

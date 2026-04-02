@@ -11,6 +11,7 @@ ExecStart=/home/gft/.bun/bin/bun run src/server/index.ts
 Restart=always
 RestartSec=5
 Environment=NODE_ENV=production
+Environment=PATH=/home/gft/.bun/bin:/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target
