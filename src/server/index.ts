@@ -2,7 +2,6 @@ import { getDb, getShiftsWithFilms, getSyncStatus, updateSyncStatus } from "./db
 import { syncShifts } from "./sync/shifts.js";
 import { syncScreenings } from "./sync/screenings.js";
 import { SERVER_PORT } from "../config.js";
-import { startOfTomorrow } from "date-fns";
 import { existsSync } from "fs";
 import { join } from "path";
 
@@ -45,7 +44,7 @@ Bun.serve({
 
     // API routes
     if (path === "/api/shifts" && req.method === "GET") {
-      const fromDate = startOfTomorrow().toISOString();
+      const fromDate = new Date().toISOString();
       const shifts = getShiftsWithFilms(fromDate);
       return json(shifts);
     }

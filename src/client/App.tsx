@@ -51,27 +51,8 @@ export function App() {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px", fontFamily: "system-ui, sans-serif" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+      <header style={{ marginBottom: 16 }}>
         <h1 style={{ margin: 0, fontSize: 24 }}>GFT Usher Shifts</h1>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <SyncIndicator label="Shifts" entry={syncStatus.shifts} />
-          <SyncIndicator label="Films" entry={syncStatus.screenings} />
-          {(() => {
-            const lastSync = syncStatus.shifts.lastSyncedAt;
-            const cooldownMs = 5 * 60_000;
-            const onCooldown = lastSync ? Date.now() - new Date(lastSync).getTime() < cooldownMs : false;
-            const disabled = syncing || onCooldown;
-            const remainMin = lastSync ? Math.ceil((cooldownMs - (Date.now() - new Date(lastSync).getTime())) / 60_000) : 0;
-            const btn = (
-              <button onClick={syncAll} disabled={disabled} style={{ ...btnStyle, opacity: disabled ? 0.5 : 1 }}>
-                {syncing ? "Syncing..." : "Sync Shifts"}
-              </button>
-            );
-            return onCooldown
-              ? <Tooltip text={`Next sync can run in ${remainMin} minute${remainMin !== 1 ? "s" : ""}`}>{btn}</Tooltip>
-              : btn;
-          })()}
-        </div>
       </header>
 
       {error && <div style={{ background: "#fee", color: "#c00", padding: 8, borderRadius: 4, marginBottom: 12 }}>{error}</div>}
@@ -100,6 +81,11 @@ export function App() {
       ) : (
         <ShiftTable shifts={filtered} allShifts={shifts} totalCount={shifts.length} />
       )}
+
+      <footer style={{ marginTop: 24, paddingTop: 12, borderTop: "1px solid #eee", display: "flex", gap: 16, justifyContent: "center" }}>
+        <SyncIndicator label="Shifts" entry={syncStatus.shifts} />
+        <SyncIndicator label="Films" entry={syncStatus.screenings} />
+      </footer>
     </div>
   );
 }

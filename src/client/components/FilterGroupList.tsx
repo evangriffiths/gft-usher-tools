@@ -37,7 +37,7 @@ export function FilterGroupList({ groups, onUpdate, onRemove, onAdd }: Props) {
                 group={g}
                 onUpdate={(patch) => onUpdate(g.id, patch)}
               />
-              <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: "auto" }}>
+              <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                 {groups.length > 1 && (
                   <button onClick={() => onRemove(g.id)} style={iconBtn} title="Remove filter">
                     &minus;
