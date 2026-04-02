@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "server": "bun run src/server/index.ts",
-    "client": "bunx --bun vite --config src/client/vite.config.ts",
+    "client": "bun x --bun vite --config src/client/vite.config.ts",
     "dev": "concurrently -n server,client -c blue,green \"bun run server\" \"bun run client\"",
-    "build": "bunx --bun vite build --config src/client/vite.config.ts",
+    "build": "bun x --bun vite build --config src/client/vite.config.ts",
     "start": "bun run build && bun run server",
     "typecheck": "tsc --noEmit"
   },
