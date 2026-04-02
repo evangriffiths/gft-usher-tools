@@ -57,14 +57,14 @@ export function App() {
           <SyncIndicator label="Shifts" entry={syncStatus.shifts} />
           <SyncIndicator label="Films" entry={syncStatus.screenings} />
           {(() => {
-            const lastSync = syncStatus.shifts.lastSyncedAt || syncStatus.screenings.lastSyncedAt;
+            const lastSync = syncStatus.shifts.lastSyncedAt;
             const cooldownMs = 5 * 60_000;
             const onCooldown = lastSync ? Date.now() - new Date(lastSync).getTime() < cooldownMs : false;
             const disabled = syncing || onCooldown;
             const remainMin = lastSync ? Math.ceil((cooldownMs - (Date.now() - new Date(lastSync).getTime())) / 60_000) : 0;
             const btn = (
               <button onClick={syncAll} disabled={disabled} style={{ ...btnStyle, opacity: disabled ? 0.5 : 1 }}>
-                {syncing ? "Syncing..." : "Sync"}
+                {syncing ? "Syncing..." : "Sync Shifts"}
               </button>
             );
             return onCooldown

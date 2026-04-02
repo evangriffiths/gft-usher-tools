@@ -9,6 +9,9 @@
     "dev": "concurrently -n server,client -c blue,green \"bun run server\" \"bun run client\"",
     "build": "bun x --bun vite build --config src/client/vite.config.ts",
     "start": "bun run build && bun run server",
+    "sync:shifts": "bun run src/server/sync-cli.ts shifts",
+    "sync:films": "bun run src/server/sync-cli.ts screenings",
+    "sync:all": "bun run src/server/sync-cli.ts all",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

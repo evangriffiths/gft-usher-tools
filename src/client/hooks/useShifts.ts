@@ -28,17 +28,14 @@ export function useShifts() {
     } catch {}
   }, []);
 
-  const syncAll = useCallback(async () => {
+  const syncShifts = useCallback(async () => {
     setSyncing(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}/sync/all`, { method: "POST" });
+      const res = await fetch(`${API_BASE}/sync/shifts`, { method: "POST" });
       const body = await res.json();
       if (!res.ok) {
         throw new Error(body.error || "Sync failed");
-      }
-      if (body.screeningsError) {
-        setError(`Screenings sync failed: ${body.screeningsError}`);
       }
       await fetchShifts();
       await fetchSyncStatus();
@@ -58,5 +55,5 @@ export function useShifts() {
     })();
   }, [fetchShifts, fetchSyncStatus]);
 
-  return { shifts, syncStatus, loading, syncing, error, syncAll };
+  return { shifts, syncStatus, loading, syncing, error, syncAll: syncShifts };
 }
