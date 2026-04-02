@@ -65,7 +65,7 @@ export function ShiftTable({ shifts: unsorted, allShifts, totalCount }: Props) {
       <div style={{ overflowX: "auto" }}>
       <table style={{ borderCollapse: "collapse", fontSize: 14, tableLayout: "fixed", width: "max-content", minWidth: "100%" }}>
         <colgroup>
-          <col style={{ width: 110 }} />
+          <col style={{ width: 95 }} />
           <col style={{ width: 110 }} />
           <col style={{ width: 70 }} />
           <col style={{ width: filmColWidth }} />
