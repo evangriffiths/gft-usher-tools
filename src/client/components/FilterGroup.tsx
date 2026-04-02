@@ -14,11 +14,9 @@ const DAYS = [
 interface Props {
   group: FilterGroupType;
   onUpdate: (patch: Partial<FilterGroupType>) => void;
-  onRemove: () => void;
-  canRemove: boolean;
 }
 
-export function FilterGroup({ group, onUpdate, onRemove, canRemove }: Props) {
+export function FilterGroup({ group, onUpdate }: Props) {
   const toggleDay = (day: number) => {
     const next = group.days.includes(day)
       ? group.days.filter((d) => d !== day)
@@ -56,24 +54,6 @@ export function FilterGroup({ group, onUpdate, onRemove, canRemove }: Props) {
           valueMax={group.startTimeMax}
           onChange={(min, max) => onUpdate({ startTimeMin: min, startTimeMax: max })}
         />
-      </div>
-
-      <div style={{ flexShrink: 0, width: 28, height: 28 }}>
-        {canRemove && (
-          <button onClick={onRemove} style={{
-            width: 28, height: 28,
-            border: "1px dashed #ccc",
-            borderRadius: 6,
-            background: "transparent",
-            cursor: "pointer",
-            fontSize: 18,
-            color: "#999",
-            lineHeight: "1",
-            padding: 0,
-          }} title="Remove filter">
-            &minus;
-          </button>
-        )}
       </div>
     </div>
   );

@@ -61,7 +61,7 @@ export function ShiftTable({ shifts: unsorted, totalCount }: Props) {
                     S{s.screen}
                   </span>
                 </td>
-                <td style={tdStyle}>
+                <td style={{ ...tdStyle, overflow: "hidden" }}>
                   {s.films.length > 0 ? (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                       {s.films.map((f, j) => (
@@ -114,4 +114,5 @@ const filmBadge: React.CSSProperties = {
   display: "inline-block", padding: "2px 8px", borderRadius: 4,
   background: "#e8f0fe", color: "#1a73e8", fontSize: 12,
   textDecoration: "none", whiteSpace: "nowrap",
+  overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%",
 };
