@@ -27,7 +27,7 @@ export function FilterGroup({ group, onUpdate, onRemove, canRemove }: Props) {
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "6px 0" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 12px", padding: "6px 0" }}>
       <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
         {DAYS.map((d) => (
           <button
@@ -48,7 +48,7 @@ export function FilterGroup({ group, onUpdate, onRemove, canRemove }: Props) {
         ))}
       </div>
 
-      <div style={{ width: 280, flexShrink: 0 }}>
+      <div style={{ flex: "1 1 200px", maxWidth: 280, minWidth: 0 }}>
         <TimeRangeSlider
           min={600}
           max={1260}
@@ -58,7 +58,7 @@ export function FilterGroup({ group, onUpdate, onRemove, canRemove }: Props) {
         />
       </div>
 
-      <div style={{ marginLeft: "auto", flexShrink: 0, width: 28, height: 28 }}>
+      <div style={{ flexShrink: 0, width: 28, height: 28 }}>
         {canRemove && (
           <button onClick={onRemove} style={{
             width: 28, height: 28,

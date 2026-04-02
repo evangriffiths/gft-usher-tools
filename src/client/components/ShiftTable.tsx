@@ -29,7 +29,8 @@ export function ShiftTable({ shifts: unsorted, totalCount }: Props) {
       <p style={{ fontSize: 13, color: "#666", marginBottom: 8 }}>
         Showing {shifts.length} of {totalCount} shifts
       </p>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, tableLayout: "fixed" }}>
+      <div style={{ overflowX: "auto" }}>
+      <table style={{ minWidth: 750, width: "100%", borderCollapse: "collapse", fontSize: 14, tableLayout: "fixed" }}>
         <colgroup>
           <col style={{ width: 110 }} />
           <col style={{ width: 110 }} />
@@ -92,6 +93,7 @@ export function ShiftTable({ shifts: unsorted, totalCount }: Props) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
