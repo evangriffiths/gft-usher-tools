@@ -98,7 +98,7 @@ export function App() {
       ) : shifts.length === 0 ? (
         <p>No shifts loaded. Click <b>Sync</b> to fetch data.</p>
       ) : (
-        <ShiftTable shifts={filtered} totalCount={shifts.length} />
+        <ShiftTable shifts={filtered} allShifts={shifts} totalCount={shifts.length} />
       )}
     </div>
   );
