@@ -22,6 +22,8 @@ function json(data: unknown, status = 200) {
 }
 
 let syncInProgress = false;
+let lastSyncTime = 0;
+const SYNC_COOLDOWN_MS = 5 * 60_000;
 
 Bun.serve({
   port: SERVER_PORT,
@@ -48,11 +50,20 @@ Bun.serve({
       return json(shifts);
     }
 
-    if (path === "/api/sync/shifts" && req.method === "POST") {
+    if (path.startsWith("/api/sync/") && req.method === "POST" && path !== "/api/sync/status") {
       if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
+      const elapsed = Date.now() - lastSyncTime;
+      if (elapsed < SYNC_COOLDOWN_MS) {
+        const remainSec = Math.ceil((SYNC_COOLDOWN_MS - elapsed) / 1000);
+        return json({ error: `Rate limited. Try again in ${remainSec}s` }, 429);
+      }
+    }
+
+    if (path === "/api/sync/shifts" && req.method === "POST") {
       syncInProgress = true;
       try {
         const result = await syncShifts();
+        lastSyncTime = Date.now();
         return json(result);
       } catch (err: any) {
         updateSyncStatus("shifts", false, err.message);
@@ -63,10 +74,10 @@ Bun.serve({
     }
 
     if (path === "/api/sync/screenings" && req.method === "POST") {
-      if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
       syncInProgress = true;
       try {
         const result = await syncScreenings();
+        lastSyncTime = Date.now();
         return json(result);
       } catch (err: any) {
         updateSyncStatus("screenings", false, err.message);
@@ -77,7 +88,6 @@ Bun.serve({
     }
 
     if (path === "/api/sync/all" && req.method === "POST") {
-      if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
       syncInProgress = true;
       try {
         const shiftsResult = await syncShifts();
@@ -86,8 +96,10 @@ Bun.serve({
           screeningsResult = await syncScreenings();
         } catch (err: any) {
           updateSyncStatus("screenings", false, err.message);
+          lastSyncTime = Date.now();
           return json({ shifts: shiftsResult.count, screeningsError: err.message });
         }
+        lastSyncTime = Date.now();
         return json({ shifts: shiftsResult.count, screenings: screeningsResult.count });
       } catch (err: any) {
         updateSyncStatus("shifts", false, err.message);

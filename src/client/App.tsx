@@ -56,9 +56,21 @@ export function App() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <SyncIndicator label="Shifts" entry={syncStatus.shifts} />
           <SyncIndicator label="Films" entry={syncStatus.screenings} />
-          <button onClick={syncAll} disabled={syncing} style={btnStyle}>
-            {syncing ? "Syncing..." : "Sync"}
-          </button>
+          {(() => {
+            const lastSync = syncStatus.shifts.lastSyncedAt || syncStatus.screenings.lastSyncedAt;
+            const cooldownMs = 5 * 60_000;
+            const onCooldown = lastSync ? Date.now() - new Date(lastSync).getTime() < cooldownMs : false;
+            const disabled = syncing || onCooldown;
+            const remainMin = lastSync ? Math.ceil((cooldownMs - (Date.now() - new Date(lastSync).getTime())) / 60_000) : 0;
+            const btn = (
+              <button onClick={syncAll} disabled={disabled} style={{ ...btnStyle, opacity: disabled ? 0.5 : 1 }}>
+                {syncing ? "Syncing..." : "Sync"}
+              </button>
+            );
+            return onCooldown
+              ? <Tooltip text={`Next sync can run in ${remainMin} minute${remainMin !== 1 ? "s" : ""}`}>{btn}</Tooltip>
+              : btn;
+          })()}
         </div>
       </header>
 
@@ -92,20 +104,34 @@ export function App() {
   );
 }
 
+function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
+  return (
+    <span style={{ position: "relative" }} className="tip">
+      {children}
+      <span className="tip-text" style={{
+        display: "none", position: "absolute", bottom: "calc(100% + 6px)", left: "50%",
+        transform: "translateX(-50%)", background: "#333", color: "#fff", fontSize: 12,
+        padding: "4px 8px", borderRadius: 4, whiteSpace: "nowrap", zIndex: 20,
+      }}>{text}</span>
+      <style>{`.tip:hover .tip-text { display: block !important; }`}</style>
+    </span>
+  );
+}
+
 function SyncIndicator({ label, entry }: { label: string; entry: import("../shared/types.js").SyncEntry }) {
   if (!entry.lastSyncedAt) return null;
   const color = entry.ok ? "#22c55e" : "#ef4444";
   const time = new Date(entry.lastSyncedAt).toLocaleString("en-GB", {
     day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
   });
-  const tooltip = entry.ok
-    ? `${label}: synced ${time}`
-    : `${label}: failed ${time}\n${entry.error}`;
+  const tip = entry.ok ? `Synced ${time}` : `Failed ${time}: ${entry.error}`;
   return (
-    <span title={tooltip} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#888", cursor: "default" }}>
-      <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, display: "inline-block" }} />
-      {label}
-    </span>
+    <Tooltip text={tip}>
+      <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#888", cursor: "default" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, display: "inline-block" }} />
+        {label}
+      </span>
+    </Tooltip>
   );
 }
 

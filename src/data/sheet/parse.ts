@@ -7,7 +7,7 @@ import { downloadWorkbook } from "./download.js";
 const TIME_RANGE_RE = /^(\d{1,2})\.(\d{2})-(\d{1,2})\.(\d{2})/;
 
 // Matches day headers like "TUESDAY 10th" or "Monday 6th"
-const DAY_HEADER_RE = /^([A-Za-z]+)\s+(\d{1,2})(st|nd|rd|th)?$/;
+const DAY_HEADER_RE = /^([A-Za-z]+)\s+(\d{1,2})(st|nd|rd|th)$/;
 
 // Matches week headers like "March 10th to March 12th 2026"
 const WEEK_HEADER_RE = /^(\w+)\s+\d{1,2}\w*\s+to\s+\w+\s+\d{1,2}\w*\s+(\d{4})/;
