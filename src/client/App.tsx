@@ -76,7 +76,7 @@ export function App() {
 
       {error && <div style={{ background: "#fee", color: "#c00", padding: 8, borderRadius: 4, marginBottom: 12 }}>{error}</div>}
 
-      <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 16, overflow: "hidden" }}>
+      <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 16 }}>
         <GlobalFiltersPanel
           value={global}
           onChange={setGlobal}

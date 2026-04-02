@@ -31,24 +31,24 @@ export function FilterGroupList({ groups, onUpdate, onRemove, onAdd }: Props) {
               OR
             </div>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ overflowX: "auto" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: "max-content" }}>
               <FilterGroup
                 group={g}
                 onUpdate={(patch) => onUpdate(g.id, patch)}
               />
-            </div>
-            <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-              {groups.length > 1 && (
-                <button onClick={() => onRemove(g.id)} style={iconBtn} title="Remove filter">
-                  &minus;
-                </button>
-              )}
-              {i === groups.length - 1 && (
-                <button onClick={onAdd} style={iconBtn} title="Add another schedule filter (OR)">
-                  +
-                </button>
-              )}
+              <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                {groups.length > 1 && (
+                  <button onClick={() => onRemove(g.id)} style={iconBtn} title="Remove filter">
+                    &minus;
+                  </button>
+                )}
+                {i === groups.length - 1 && (
+                  <button onClick={onAdd} style={iconBtn} title="Add another schedule filter (OR)">
+                    +
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
