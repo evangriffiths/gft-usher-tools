@@ -82,7 +82,7 @@ export function App() {
         <ShiftTable shifts={filtered} allShifts={shifts} totalCount={shifts.length} />
       )}
 
-      <footer style={{ marginTop: 24, paddingTop: 12, borderTop: "1px solid #eee", display: "flex", gap: 16, justifyContent: "center" }}>
+      <footer style={{ marginTop: 24, paddingTop: 12, borderTop: "1px solid #eee", display: "flex", gap: 16, justifyContent: "flex-end" }}>
         <SyncIndicator label="Shifts" entry={syncStatus.shifts} />
         <SyncIndicator label="Films" entry={syncStatus.screenings} />
       </footer>
