@@ -23,21 +23,21 @@ const iconBtn: React.CSSProperties = {
 
 export function FilterGroupList({ groups, onUpdate, onRemove, onAdd }: Props) {
   return (
-    <div>
-      {groups.map((g, i) => (
-        <div key={g.id}>
-          {i > 0 && (
-            <div style={{ textAlign: "center", color: "#999", fontStyle: "italic", fontSize: 12 }}>
-              OR
-            </div>
-          )}
-          <div style={{ overflowX: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: "max-content" }}>
+    <div style={{ overflowX: "auto" }}>
+      <div style={{ minWidth: "max-content" }}>
+        {groups.map((g, i) => (
+          <div key={g.id}>
+            {i > 0 && (
+              <div style={{ textAlign: "center", color: "#999", fontStyle: "italic", fontSize: 12 }}>
+                OR
+              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <FilterGroup
                 group={g}
                 onUpdate={(patch) => onUpdate(g.id, patch)}
               />
-              <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+              <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: "auto" }}>
                 {groups.length > 1 && (
                   <button onClick={() => onRemove(g.id)} style={iconBtn} title="Remove filter">
                     &minus;
@@ -51,8 +51,8 @@ export function FilterGroupList({ groups, onUpdate, onRemove, onAdd }: Props) {
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
