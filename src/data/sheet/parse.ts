@@ -3,6 +3,24 @@ import { Shift, ScreenNumber } from "../../shared/types.js";
 import { argbToScreen, isBlack } from "./colors.js";
 import { downloadWorkbook } from "./download.js";
 
+/**
+ * Create a Date from UK local time (handles GMT/BST automatically).
+ * The sheet always uses UK local time, but the server may be in any timezone.
+ */
+function ukLocalDate(year: number, month: number, day: number, hour: number, min: number): Date {
+  // Start by assuming UTC, then check what hour that is in London
+  const utc = new Date(Date.UTC(year, month, day, hour, min));
+  const londonHour = parseInt(
+    utc.toLocaleString("en-GB", { timeZone: "Europe/London", hour: "2-digit", hour12: false })
+  );
+  if (londonHour === hour) {
+    // UTC = London time (GMT period)
+    return utc;
+  }
+  // London is ahead by 1 (BST) - subtract 1 hour to get correct UTC
+  return new Date(Date.UTC(year, month, day, hour - 1, min));
+}
+
 // Matches time ranges like "12.20-16.45" or "12.20-16.45 (x2)"
 const TIME_RANGE_RE = /^(\d{1,2})\.(\d{2})-(\d{1,2})\.(\d{2})/;
 
@@ -128,11 +146,11 @@ function parseSheet(ws: ExcelJS.Worksheet): Shift[] {
       }
 
       for (const col of shiftCols) {
-        const startTime = new Date(
+        const startTime = ukLocalDate(
           currentYear, currentMonth, currentDay,
           col.startHour, col.startMin
         );
-        const endTime = new Date(
+        const endTime = ukLocalDate(
           currentYear, currentMonth, currentDay,
           col.endHour, col.endMin
         );
