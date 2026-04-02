@@ -44,9 +44,13 @@ echo "=== Installing systemd units ==="
 bash "$APP_DIR/deploy/deploy.sh"
 
 echo "=== Configuring caddy ==="
-cp "$APP_DIR/deploy/Caddyfile" /etc/caddy/Caddyfile
+# Append our site block if not already present (don't overwrite other apps)
+if ! grep -q "gftushers.evangriffiths.org" /etc/caddy/Caddyfile 2>/dev/null; then
+  echo "" >> /etc/caddy/Caddyfile
+  cat "$APP_DIR/deploy/Caddyfile" >> /etc/caddy/Caddyfile
+fi
 systemctl enable caddy
-systemctl restart caddy
+systemctl reload caddy
 
 echo "=== Setup complete ==="
 echo "Verify: systemctl status gft-usher"

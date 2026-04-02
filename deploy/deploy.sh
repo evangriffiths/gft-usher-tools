@@ -35,7 +35,11 @@ systemctl enable gft-sync-screenings.timer
 systemctl start gft-sync-screenings.timer
 
 echo "=== Updating Caddyfile ==="
-cp deploy/Caddyfile /etc/caddy/Caddyfile
+# Ensure our site block is present without overwriting other apps
+if ! grep -q "gftushers.evangriffiths.org" /etc/caddy/Caddyfile 2>/dev/null; then
+  echo "" >> /etc/caddy/Caddyfile
+  cat deploy/Caddyfile >> /etc/caddy/Caddyfile
+fi
 systemctl reload caddy
 
 echo "=== Deploy complete ==="
