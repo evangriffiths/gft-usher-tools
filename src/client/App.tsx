@@ -52,7 +52,7 @@ export function App() {
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px", fontFamily: "system-ui, sans-serif" }}>
       <header style={{ marginBottom: 16 }}>
-        <h1 style={{ margin: 0, fontSize: 24 }}>GFT Usher Shifts</h1>
+        <img src="/logo.svg" alt="GFT Usher Shifts" style={{ height: 40 }} />
       </header>
 
       {error && <div style={{ background: "#fee", color: "#c00", padding: 8, borderRadius: 4, marginBottom: 12 }}>{error}</div>}
