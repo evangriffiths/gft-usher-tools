@@ -5,7 +5,8 @@ const API_BASE = "/api";
 
 export function useShifts() {
   const [shifts, setShifts] = useState<ShiftWithFilms[]>([]);
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>({ shifts: null, screenings: null });
+  const empty = { lastSyncedAt: null, ok: true, error: null };
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>({ shifts: { ...empty }, screenings: { ...empty } });
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +33,12 @@ export function useShifts() {
     setError(null);
     try {
       const res = await fetch(`${API_BASE}/sync/all`, { method: "POST" });
+      const body = await res.json();
       if (!res.ok) {
-        const body = await res.json();
         throw new Error(body.error || "Sync failed");
+      }
+      if (body.screeningsError) {
+        setError(`Screenings sync failed: ${body.screeningsError}`);
       }
       await fetchShifts();
       await fetchSyncStatus();

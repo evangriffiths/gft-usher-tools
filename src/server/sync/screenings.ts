@@ -22,7 +22,7 @@ export async function syncScreenings(): Promise<{ count: number }> {
   console.log(`Fetched ${screenings.length} screenings`);
 
   upsertScreenings(screenings);
-  updateSyncStatus("screenings");
+  updateSyncStatus("screenings", true);
 
   return { count: screenings.length };
 }

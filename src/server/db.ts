@@ -1,5 +1,5 @@
 import { Database } from "bun:sqlite";
-import { Shift, Screening, ShiftWithFilms } from "../shared/types.js";
+import { Shift, Screening, ShiftWithFilms, SyncStatus, SyncEntry } from "../shared/types.js";
 import { matchShiftsToFilms } from "../data/matcher/match.js";
 
 const DB_PATH = "gft.db";
@@ -48,9 +48,15 @@ function initSchema() {
   db.run(`
     CREATE TABLE IF NOT EXISTS sync_status (
       key TEXT PRIMARY KEY,
-      last_synced_at TEXT NOT NULL
+      last_synced_at TEXT NOT NULL,
+      ok INTEGER NOT NULL DEFAULT 1,
+      error TEXT
     )
   `);
+
+  // Migration: add ok/error columns if missing
+  try { db.run("ALTER TABLE sync_status ADD COLUMN ok INTEGER NOT NULL DEFAULT 1"); } catch {}
+  try { db.run("ALTER TABLE sync_status ADD COLUMN error TEXT"); } catch {}
 }
 
 export function upsertShifts(shifts: Shift[]) {
@@ -93,25 +99,34 @@ export function upsertScreenings(screenings: Screening[]) {
   tx();
 }
 
-export function updateSyncStatus(key: string) {
+export function updateSyncStatus(key: string, ok: boolean, error?: string) {
   const d = getDb();
   d.run(
-    `INSERT INTO sync_status (key, last_synced_at) VALUES (?, ?)
-     ON CONFLICT(key) DO UPDATE SET last_synced_at = excluded.last_synced_at`,
-    [key, new Date().toISOString()]
+    `INSERT INTO sync_status (key, last_synced_at, ok, error) VALUES (?, ?, ?, ?)
+     ON CONFLICT(key) DO UPDATE SET
+       last_synced_at = excluded.last_synced_at,
+       ok = excluded.ok,
+       error = excluded.error`,
+    [key, new Date().toISOString(), ok ? 1 : 0, error ?? null]
   );
 }
 
-export function getSyncStatus(): { shifts: string | null; screenings: string | null } {
+const emptySyncEntry: SyncEntry = { lastSyncedAt: null, ok: true, error: null };
+
+export function getSyncStatus(): SyncStatus {
   const d = getDb();
-  const rows = d.query("SELECT key, last_synced_at FROM sync_status").all() as {
+  const rows = d.query("SELECT key, last_synced_at, ok, error FROM sync_status").all() as {
     key: string;
     last_synced_at: string;
+    ok: number;
+    error: string | null;
   }[];
-  const map = Object.fromEntries(rows.map((r) => [r.key, r.last_synced_at]));
+  const map = Object.fromEntries(
+    rows.map((r) => [r.key, { lastSyncedAt: r.last_synced_at, ok: !!r.ok, error: r.error }])
+  );
   return {
-    shifts: map["shifts"] ?? null,
-    screenings: map["screenings"] ?? null,
+    shifts: map["shifts"] ?? { ...emptySyncEntry },
+    screenings: map["screenings"] ?? { ...emptySyncEntry },
   };
 }
 

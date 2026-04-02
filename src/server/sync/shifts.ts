@@ -14,7 +14,7 @@ export async function syncShifts(): Promise<{ count: number }> {
   console.log(`Parsed ${shifts.length} shifts`);
 
   upsertShifts(shifts);
-  updateSyncStatus("shifts");
+  updateSyncStatus("shifts", true);
 
   return { count: shifts.length };
 }

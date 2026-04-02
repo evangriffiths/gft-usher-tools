@@ -54,11 +54,8 @@ export function App() {
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h1 style={{ margin: 0, fontSize: 24 }}>GFT Usher Shifts</h1>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {syncStatus.shifts && (
-            <span style={{ fontSize: 12, color: "#888" }}>
-              Last sync: {new Date(syncStatus.shifts).toLocaleString("en-GB")}
-            </span>
-          )}
+          <SyncIndicator label="Shifts" entry={syncStatus.shifts} />
+          <SyncIndicator label="Films" entry={syncStatus.screenings} />
           <button onClick={syncAll} disabled={syncing} style={btnStyle}>
             {syncing ? "Syncing..." : "Sync"}
           </button>
@@ -92,6 +89,23 @@ export function App() {
         <ShiftTable shifts={filtered} totalCount={shifts.length} />
       )}
     </div>
+  );
+}
+
+function SyncIndicator({ label, entry }: { label: string; entry: import("../shared/types.js").SyncEntry }) {
+  if (!entry.lastSyncedAt) return null;
+  const color = entry.ok ? "#22c55e" : "#ef4444";
+  const time = new Date(entry.lastSyncedAt).toLocaleString("en-GB", {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  });
+  const tooltip = entry.ok
+    ? `${label}: synced ${time}`
+    : `${label}: failed ${time}\n${entry.error}`;
+  return (
+    <span title={tooltip} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#888", cursor: "default" }}>
+      <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, display: "inline-block" }} />
+      {label}
+    </span>
   );
 }
 

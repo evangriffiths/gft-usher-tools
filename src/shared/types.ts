@@ -26,9 +26,15 @@ export interface ShiftWithFilms extends Shift {
   films: Screening[];
 }
 
+export interface SyncEntry {
+  lastSyncedAt: string | null; // ISO 8601
+  ok: boolean;
+  error: string | null;
+}
+
 export interface SyncStatus {
-  shifts: string | null;     // ISO 8601 or null
-  screenings: string | null; // ISO 8601 or null
+  shifts: SyncEntry;
+  screenings: SyncEntry;
 }
 
 export function isShiftFree(shift: Shift): boolean {

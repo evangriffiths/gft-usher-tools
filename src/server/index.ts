@@ -1,4 +1,4 @@
-import { getDb, getShiftsWithFilms, getSyncStatus } from "./db.js";
+import { getDb, getShiftsWithFilms, getSyncStatus, updateSyncStatus } from "./db.js";
 import { syncShifts } from "./sync/shifts.js";
 import { syncScreenings } from "./sync/screenings.js";
 import { SERVER_PORT } from "../config.js";
@@ -55,6 +55,7 @@ Bun.serve({
         const result = await syncShifts();
         return json(result);
       } catch (err: any) {
+        updateSyncStatus("shifts", false, err.message);
         return json({ error: err.message }, 500);
       } finally {
         syncInProgress = false;
@@ -68,6 +69,7 @@ Bun.serve({
         const result = await syncScreenings();
         return json(result);
       } catch (err: any) {
+        updateSyncStatus("screenings", false, err.message);
         return json({ error: err.message }, 500);
       } finally {
         syncInProgress = false;
@@ -78,10 +80,17 @@ Bun.serve({
       if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
       syncInProgress = true;
       try {
-        const shifts = await syncShifts();
-        const screenings = await syncScreenings();
-        return json({ shifts: shifts.count, screenings: screenings.count });
+        const shiftsResult = await syncShifts();
+        let screeningsResult;
+        try {
+          screeningsResult = await syncScreenings();
+        } catch (err: any) {
+          updateSyncStatus("screenings", false, err.message);
+          return json({ shifts: shiftsResult.count, screeningsError: err.message });
+        }
+        return json({ shifts: shiftsResult.count, screenings: screeningsResult.count });
       } catch (err: any) {
+        updateSyncStatus("shifts", false, err.message);
         return json({ error: err.message }, 500);
       } finally {
         syncInProgress = false;
