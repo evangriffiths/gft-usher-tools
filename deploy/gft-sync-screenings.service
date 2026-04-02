@@ -1,0 +1,9 @@
+[Unit]
+Description=GFT Usher - Sync Screenings
+
+[Service]
+Type=oneshot
+User=gft
+Group=gft
+WorkingDirectory=/opt/gft-usher-tools
+ExecStart=/home/gft/.bun/bin/bun run src/server/sync-cli.ts screenings

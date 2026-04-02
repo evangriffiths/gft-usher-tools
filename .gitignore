@@ -1,3 +1,7 @@
+node_modules
+dist
 .env
-.credentials.json
-__pycache__
+*.db
+*.db-wal
+*.db-shm
+src/client/dist

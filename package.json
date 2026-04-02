@@ -1,0 +1,29 @@
+{
+  "name": "gft-usher-tools",
+  "version": "0.2.0",
+  "description": "Cinema usher shift-to-film mapping tool for Glasgow Film Theatre",
+  "type": "module",
+  "scripts": {
+    "server": "bun run src/server/index.ts",
+    "client": "bunx --bun vite --config src/client/vite.config.ts",
+    "dev": "concurrently -n server,client -c blue,green \"bun run server\" \"bun run client\"",
+    "build": "bunx --bun vite build --config src/client/vite.config.ts",
+    "start": "bun run build && bun run server",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "exceljs": "^4.4.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.2.1",
+    "typescript": "^5.7.0",
+    "vite": "^6.3.0"
+  }
+}

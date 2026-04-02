@@ -1,0 +1,109 @@
+import { getDb, getShiftsWithFilms, getSyncStatus } from "./db.js";
+import { syncShifts } from "./sync/shifts.js";
+import { syncScreenings } from "./sync/screenings.js";
+import { SERVER_PORT } from "../config.js";
+import { startOfTomorrow } from "date-fns";
+import { existsSync } from "fs";
+import { join } from "path";
+
+// Initialize DB on startup
+getDb();
+
+const STATIC_DIR = join(import.meta.dir, "../client/dist");
+
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
+
+let syncInProgress = false;
+
+Bun.serve({
+  port: SERVER_PORT,
+  idleTimeout: 255, // seconds; sync can take a while
+  async fetch(req) {
+    const url = new URL(req.url);
+    const path = url.pathname;
+
+    // CORS preflight
+    if (req.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      });
+    }
+
+    // API routes
+    if (path === "/api/shifts" && req.method === "GET") {
+      const fromDate = startOfTomorrow().toISOString();
+      const shifts = getShiftsWithFilms(fromDate);
+      return json(shifts);
+    }
+
+    if (path === "/api/sync/shifts" && req.method === "POST") {
+      if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
+      syncInProgress = true;
+      try {
+        const result = await syncShifts();
+        return json(result);
+      } catch (err: any) {
+        return json({ error: err.message }, 500);
+      } finally {
+        syncInProgress = false;
+      }
+    }
+
+    if (path === "/api/sync/screenings" && req.method === "POST") {
+      if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
+      syncInProgress = true;
+      try {
+        const result = await syncScreenings();
+        return json(result);
+      } catch (err: any) {
+        return json({ error: err.message }, 500);
+      } finally {
+        syncInProgress = false;
+      }
+    }
+
+    if (path === "/api/sync/all" && req.method === "POST") {
+      if (syncInProgress) return json({ error: "Sync already in progress" }, 409);
+      syncInProgress = true;
+      try {
+        const shifts = await syncShifts();
+        const screenings = await syncScreenings();
+        return json({ shifts: shifts.count, screenings: screenings.count });
+      } catch (err: any) {
+        return json({ error: err.message }, 500);
+      } finally {
+        syncInProgress = false;
+      }
+    }
+
+    if (path === "/api/sync/status" && req.method === "GET") {
+      return json(getSyncStatus());
+    }
+
+    // Serve static files (production build)
+    if (existsSync(STATIC_DIR)) {
+      let filePath = join(STATIC_DIR, path === "/" ? "index.html" : path);
+      if (existsSync(filePath)) {
+        return new Response(Bun.file(filePath));
+      }
+      // SPA fallback
+      return new Response(Bun.file(join(STATIC_DIR, "index.html")));
+    }
+
+    return json({ error: "Not found" }, 404);
+  },
+});
+
+console.log(`Server running on http://localhost:${SERVER_PORT}`);

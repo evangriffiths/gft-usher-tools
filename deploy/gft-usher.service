@@ -1,0 +1,16 @@
+[Unit]
+Description=GFT Usher Tools
+After=network.target
+
+[Service]
+Type=simple
+User=gft
+Group=gft
+WorkingDirectory=/opt/gft-usher-tools
+ExecStart=/home/gft/.bun/bin/bun run src/server/index.ts
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
