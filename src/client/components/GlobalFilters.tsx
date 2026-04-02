@@ -93,7 +93,7 @@ function MultiSelect<T extends string | number>({
         </summary>
         <div style={{
           position: "absolute", zIndex: 10, background: "#fff", border: "1px solid #ddd",
-          borderRadius: 4, padding: 6, maxHeight: 250, overflowY: "auto", minWidth: 180,
+          borderRadius: 4, padding: 6, maxHeight: 250, overflowY: "auto", minWidth: 240,
           boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
         }}>
           {options.map((o) => (
