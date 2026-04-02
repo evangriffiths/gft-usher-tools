@@ -2,7 +2,7 @@
 Description=Sync GFT screenings daily
 
 [Timer]
-OnCalendar=*-*-* 04:00:00
+OnCalendar=*-*-* 04:05:00
 Persistent=true
 
 [Install]
